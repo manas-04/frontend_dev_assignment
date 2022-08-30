@@ -33,6 +33,8 @@ class FirstScreenBloc extends Bloc<FirstScreenEvent, FirstScreenState> {
     var dio = Dio();
     final response = await dio.get('https://random.dog/woof.json');
     final data = UrlResponse.fromJson(response.data);
-    emit(Loaded(data: data, isImageLoading: true));
+    emit(
+      Loaded(data: data, isImageLoading: true),
+    );
   }
 }

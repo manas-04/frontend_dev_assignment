@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:video_player/video_player.dart';
@@ -29,6 +31,8 @@ class _FirstScreenState extends State<FirstScreen> {
       });
       await controller.initialize();
       controller.play();
+    } else {
+      throw 'This is not a video';
     }
   }
 
@@ -50,6 +54,8 @@ class _FirstScreenState extends State<FirstScreen> {
           if (state is Loaded) {
             resolveLoadedState(state).then((_) {
               context.read<FirstScreenBloc>().add(ImageLoadedEvent());
+            }).catchError((error) {
+              log(error);
             });
           } else if (state is ImageSavedState) {
             Navigator.of(context).pushNamed(Screen2.routeName).then(
@@ -60,18 +66,18 @@ class _FirstScreenState extends State<FirstScreen> {
           builder: (context, state) {
             if (state is Loaded) {
               late Image image;
-              // print(state.data.url);
               if (!state.data.isVideo) {
                 image = Image.network(state.data.url);
                 image.image.resolve(const ImageConfiguration()).addListener(
                   ImageStreamListener(
                     (info, call) {
+                      // print(info);
                       context.read<FirstScreenBloc>().add(ImageLoadedEvent());
                     },
                   ),
                 );
               }
-
+              print(state.isImageLoading);
               return Center(
                 child: Container(
                   height: size.height * 0.5,
